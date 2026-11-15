@@ -1,0 +1,18 @@
+[package]
+name = "@deckyard/epub"
+version = "0.1.0"
+description = "Read and write EPUB books: metadata, chapters, table of contents, images and styles"
+license = "LGPL-3.0-only"
+authors = ["mplx <mplx@jennifer-lang.dev>"]
+# Pure readers and writers over bytes: no file, network or process access.
+capabilities = []
+keywords = ["epub", "ebook", "xhtml", "opf", "markdown", "publishing"]
+
+[package.urls]
+deck = "https://raw.githubusercontent.com/deckyard/deck-epub/main/deck.toml"
+homepage = "https://github.com/deckyard/deck-epub"
+manual = "https://deckyard.github.io/deck-epub/"
+
+[engines]
+jennifer = ">=0.26.0"
+jennifer-tiny = ">=0.26.0"
