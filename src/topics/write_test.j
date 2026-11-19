@@ -421,20 +421,17 @@ func testHrefsDifferingOnlyInCaseClash() {
 # nesting at 64, and nav.xhtml holds `html`, `body`, `nav`, `ol`, then an
 # `li` and an `ol` per level, then the `li`, the `a` and its text, which
 # `xml.encode` counts too.
-def const TINY_TOC_LEVEL as int init 28;
 
 # A table of contents deeper than nav.xhtml can be read back (the `html`
 # parser stops at 512 elements, two per level) is a reached cap. Before the
 # cap, level 300 built a book `read` refused and level 600 failed in
 # `xml.append` (kind "runtime" then; "limit" since the interpreter's M28.68).
-# On the tiny build the `xml` nesting cap comes first, as kind "limit" too,
-# past level 28. Before the writers and readers kept their own stacks, the
-# tiny build failed this at its 120 nested calls.
+# On the tiny build the interpreter's value nesting cap stops reading
+# nav.xhtml back past level 11, so `build` refuses there (TINY_TOC_LEVEL);
+# before that cap (jennifer 0.26.0) it wrote levels 12 to 28, which `read`
+# then refused.
 func testATableOfContentsDeeperThanTheCapIsALimit() {
-    def deepest as int init MAX_TOC_LEVEL;
-    if (meta.BUILD == "tinygo") {
-        $deepest = TINY_TOC_LEVEL;
-    }
+    def deepest as int init maxTocLevel();
     def b as Book init chapter(book("B", "en"), "c.xhtml", "C", "<p>x</p>");
     for (def i in 0..$deepest + 1) {
         $b = tocEntry($b, "L", "c.xhtml", $i);

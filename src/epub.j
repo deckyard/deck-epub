@@ -52,6 +52,7 @@ use crc;
 use hash;
 use encoding;
 use binary;
+use meta;
 use archive;
 use compress;
 

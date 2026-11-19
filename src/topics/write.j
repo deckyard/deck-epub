@@ -823,6 +823,19 @@ func tocOf(b as Book) {
 # nest a few levels.
 def const MAX_TOC_LEVEL as int init 100;
 
+# The same on the tiny build, where the interpreter's value nesting cap (64
+# levels, two per element of the parsed tree) stops the `html` parse of
+# nav.xhtml past level 11: `build` must not write a book `read` refuses.
+def const TINY_TOC_LEVEL as int init 11;
+
+# The deepest level for the build this runs on.
+func maxTocLevel() {
+    if (meta.BUILD == "tinygo") {
+        return TINY_TOC_LEVEL;
+    }
+    return MAX_TOC_LEVEL;
+}
+
 # Refuse a table of contents a reader could not follow: a level that jumps, a
 # heading with nothing under it, a link to something that is not a chapter.
 func checkToc(entries as list of TocEntry, chapters as list of Chapter) {
@@ -834,11 +847,11 @@ func checkToc(entries as list of TocEntry, chapters as list of Chapter) {
     for (def i in 0..len($entries)) {
         def e as TocEntry init $entries[$i];
         def where as string init "table of contents entry " + shown($e.title);
-        if ($e.level > MAX_TOC_LEVEL) {
+        if ($e.level > maxTocLevel()) {
             throw Error{
                 kind: "limit",
                 message: "epub: " + $where + " is deeper than level " +
-                    convert.toString(MAX_TOC_LEVEL)
+                    convert.toString(maxTocLevel())
             };
         }
         if ($e.level > $prev + 1) {

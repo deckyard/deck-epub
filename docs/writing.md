@@ -170,7 +170,7 @@ with nothing under it, so a caller that writes a heading per part must drop
 the heading of a part with no chapters. `build` refuses (reason
 `"toc"`) a level that jumps by more than one, a first entry above 0, a
 heading with nothing under it, and an href that is not one of the chapters
-(a `#fragment` may follow). A level deeper than 100 (28 on the tiny build, whose `xml` nesting cap is 64)
+(a `#fragment` may follow). A level deeper than 100 (11 on the tiny build, whose value nesting cap of 64 stops the `html` parse of `nav.xhtml` sooner)
 is a reached cap,
 an `Error` of kind `"limit"`: a navigation document nested that deep is past
 what the `html` parser, and so `read`, accepts.
