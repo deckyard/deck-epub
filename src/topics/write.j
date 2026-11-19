@@ -1406,7 +1406,7 @@ func html5Page(content as string) {
     def metas as int init len(regex.findAll(HTTP_EQUIV, $page));
     def summaries as int init len(regex.findAll(SUMMARY_ATTR, $page));
     $page = regex.replace(HTTP_EQUIV, $page, "");
-    $page = regex.replace(SUMMARY_ATTR, $page, "${1}");
+    $page = regex.replace(SUMMARY_ATTR, $page, '${1}');
     def dropped as list of string;
     if ($metas > 0) {
         $dropped[] = convert.toString($metas) + " <meta http-equiv>";
