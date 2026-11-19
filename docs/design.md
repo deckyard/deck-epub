@@ -175,9 +175,11 @@ EPUB 3 multiple renditions, and any reading system's rendering.
 - **Case folding** is lower-casing, exact for ASCII names, close for
   others.
 - **`jennifer-tiny`.** The suite passes on the tiny build, which the deck
-  declares. Its limits are smaller: `xml` nests 64 levels (a package or NCX
-  deeper is refused, a chapter deeper is read as HTML, a table of contents
-  is written at most 28 levels deep), and less memory for copies, so a
+  declares. Its limits are smaller: `xml` nests 64 levels (a package, NCX
+  or chapter deeper is refused), the interpreter's value nesting cap of 64
+  stops the `html` parse at about 31 elements (a table of contents is
+  written at most 11 levels deep, so its `nav.xhtml` reads back), and less
+  memory for copies, so a
   book of about 2,000 chapters stops with "limit" in the `html` parse of its
   navigation document. Walks over trees recurse only a few levels and go on
   with an explicit stack, as the tiny build allows 120 nested calls.

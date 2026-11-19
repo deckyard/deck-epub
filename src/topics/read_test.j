@@ -1004,8 +1004,9 @@ func testMediaOverlaysAreRead() {
 
 # A navigation document nesting 150 levels is read with an explicit stack;
 # before, `navItems` recursed once per level, past the tiny build's 120
-# nested calls. An NCX nesting 50 (under the tiny build's `xml` cap of 64)
-# likewise.
+# nested calls. On the tiny build its `html` parse stops first, at the value
+# nesting cap, as kind "limit". An NCX nesting 50 (under the tiny build's
+# `xml` cap of 64) is read on both.
 func testDeepTablesOfContentsAreReadWithoutRecursion() {
     def items as string init "";
     for (def i in 0..150) {
@@ -1014,10 +1015,20 @@ func testDeepTablesOfContentsAreReadWithoutRecursion() {
     $items = $items + '<li><a href="../ch.xhtml">Last</a></li>' + strings.repeat("</ol></li>", 150);
     def nav as string init '<html xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol>' +
         $items + "</ol></nav></body></html>";
-    def got as list of TocEntry init navRead($nav, "toc/nav.xhtml").toc;
-    testing.assertEqual(len($got), 151);
-    testing.assertEqual($got[150].level, 150);
-    testing.assertEqual($got[150].title, "Last");
+    if (meta.BUILD == "tinygo") {
+        def kind as string init "";
+        try {
+            navRead($nav, "toc/nav.xhtml");
+        } catch (e) {
+            $kind = $e.kind;
+        }
+        testing.assertEqual($kind, "limit");
+    } else {
+        def got as list of TocEntry init navRead($nav, "toc/nav.xhtml").toc;
+        testing.assertEqual(len($got), 151);
+        testing.assertEqual($got[150].level, 150);
+        testing.assertEqual($got[150].title, "Last");
+    }
     def points as string init "";
     for (def i in 0..50) {
         $points = $points + '<navPoint><navLabel><text>P</text></navLabel><content src="ch.xhtml"/>';
@@ -1030,10 +1041,11 @@ func testDeepTablesOfContentsAreReadWithoutRecursion() {
 }
 
 # A chapter nested past the `xml` parser's cap is read as HTML rather than
-# refusing the book, as long as the `html` parser (512 levels) takes it. That
-# matters on the tiny build, whose `xml` cap is 64: before, a chapter 65
-# levels deep ended the read with "limit". On the default build the `xml` cap
-# (1000) is above the `html` one, so a chapter past it is still "limit".
+# refusing the book, as long as the `html` parser (512 levels) takes it. On
+# the default build the `xml` cap (1000) is above the `html` one, so a
+# chapter past it is still "limit". On the tiny build the `xml` cap is 64,
+# but the interpreter's value nesting cap stops the `html` parse at about 31
+# elements, so a chapter past 64 levels is "limit" there too.
 func deepPage(depth as int) {
     return '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Deep</title></head><body>' +
         strings.repeat("<div>", $depth) + "<p>x</p>" + strings.repeat("</div>", $depth) +
@@ -1041,8 +1053,12 @@ func deepPage(depth as int) {
 }
 
 func testAChapterTooDeepForXmlIsReadAsHtml() {
+    if (meta.BUILD == "tinygo") {
+        testing.assertEqual(readReason(withChapter(bytesOf(deepPage(65)))), "kind:limit");
+        return;
+    }
     def b as Book init read(withChapter(bytesOf(deepPage(65))));
-    testing.assertEqual($b.chapters[0].wellFormed, meta.BUILD != "tinygo");
+    testing.assertTrue($b.chapters[0].wellFormed);
     testing.assertEqual($b.chapters[0].title, "Deep");
     testing.assertEqual(text($b.chapters[0]), "x");
     testing.assertEqual(readReason(withChapter(bytesOf(deepPage(1001)))), "kind:limit");

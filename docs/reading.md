@@ -190,10 +190,12 @@ is read as HTML instead, as long as the `html` parser (512 levels) takes it.
 
 On the tiny build (`jennifer-tiny`, declared and tested) the deck works the
 same, within that build's smaller limits: the `xml` parser nests at most 64
-levels (1000 on the default build), so a package document or NCX deeper
-than that is refused as `"limit"`, a chapter deeper is read as HTML
-(`wellFormed` false), a chapter body given to `chapter` may nest about 60
-levels, and a table of contents at most 28 (100 on the default build); and
+levels (1000 on the default build), and the interpreter's value nesting cap
+(64) stops the `html` parser at about 31 elements, so a package document,
+NCX or chapter deeper than 64 levels is refused as `"limit"` (a chapter is
+not read as HTML instead, as on the default build), a chapter body given to
+`chapter` may nest about 60 levels, and a table of contents at most 11 (100
+on the default build); and
 the interpreter allows less memory for copies, so the largest books (2,000
 chapters with a navigation document to match, about 36 MB unpacked) stop
 with `"limit"` while the bundled `html` module parses that navigation

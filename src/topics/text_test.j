@@ -164,11 +164,23 @@ func testTheActiveTagsAreTheOnesTheEventsActOn() {
 
 # A page nested far deeper than the tiny build's 120 nested calls is walked
 # with an explicit stack, read as HTML (not well formed) or not; before,
-# `walk`, `findTags` and `gatherText` recursed once per level.
+# `walk`, `findTags` and `gatherText` recursed once per level. The tiny
+# build's value nesting cap (64 levels, two per element) stops the `html`
+# parse of such a page first, as kind "limit".
 func testADeeplyNestedPageIsWalkedWithoutRecursion() {
     def deep as string init "<html><body>" + strings.repeat("<div>", 300) +
         "<p>deep <b>text</b></p>" +
         strings.repeat("</div>", 300) + "</body></html>";
+    if (meta.BUILD == "tinygo") {
+        def kind as string init "";
+        try {
+            parseHtml($deep);
+        } catch (e) {
+            $kind = $e.kind;
+        }
+        testing.assertEqual($kind, "limit");
+        return;
+    }
     testing.assertEqual(text(chapterFrom($deep, false)), "deep text");
     def doc as html.Node init parseHtml($deep);
     testing.assertEqual(len(findTags($doc, "div", [])), 300);
