@@ -190,17 +190,3 @@ EPUB 3 multiple renditions, and any reading system's rendering.
   that throw kind `"limit"` (the decoder-cap milestone), and the
   `markdown` module's XHTML output.
 - A floor of 0.26.0, as every deck.
-
-## History
-
-- 2026-11-14: first version (writer ported from Grimoire, reader new),
-  validated against 73 books; batch builders, `check`, direction, generated
-  landmarks and compression added; reader tolerances with `notes`;
-  percent-encoded names, W3C dates, rebuild of navigation documents and
-  pictures in the spine.
-- 2026-11-14: spaces refused in names, `rename`; fixed layout, landmarks
-  and page lists read and written; spine fallback chains.
-- 2026-11-15: `writable`; XHTML 1.1 chapters written as HTML5; cover pages;
-  linked navigation documents kept; media overlays passed through.
-- 2026-11-15: declared for `jennifer-tiny`: tree walks made iterative past a
-  few levels, a chapter past the `xml` nesting cap read as HTML.
