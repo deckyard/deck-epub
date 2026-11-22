@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - reading a book: `read`, `readWith`, `resource`, `resolve`.
 #
@@ -92,12 +92,12 @@ func mimetypeNote(data as bytes, a as Archive, methods as map of string to int) 
     }
     def content as bytes init entryData($a, "mimetype");
     if ($content != bytesOf(MIMETYPE) and
-        strings.trim(convert.stringFromBytes("utf-8", $content)) != MIMETYPE) {
+        strings.trim(encoding.decode("utf-8", $content)) != MIMETYPE) {
         fail("container", "the mimetype entry does not say " + MIMETYPE);
     }
     def wrong as list of string;
     def nameLen as int init binary.readUint("le", $data, 26, 2);
-    if (len($data) < 30 + $nameLen or binary.slice($data, 30, 30 + $nameLen) != bytesOf("mimetype")) {
+    if (len($data) < 30 + $nameLen or $data[30..30 + $nameLen] != bytesOf("mimetype")) {
         $wrong[] = "not the first entry";
     }
     if (maps.has($methods, "mimetype") and $methods["mimetype"] != 0) {
@@ -136,16 +136,14 @@ func entryMethods(data as bytes) {
     def p as int init binary.readUint("le", $data, $eocd + 16, 4);
     def central as bytes init le32(0x02014b50);
     for (def i in 0..$count) {
-        if ($p + 46 > len($data) or binary.slice($data, $p, $p + 4) != $central) {
+        if ($p + 46 > len($data) or $data[$p..$p + 4] != $central) {
             return $out;
         }
         def nameLen as int init binary.readUint("le", $data, $p + 28, 2);
         if ($p + 46 + $nameLen > len($data)) {
             return $out;
         }
-        def name as string init convert.stringFromBytes(
-            "utf-8",
-            binary.slice($data, $p + 46, $p + 46 + $nameLen));
+        def name as string init encoding.decode("utf-8", $data[$p + 46..$p + 46 + $nameLen]);
         $out[$name] = binary.readUint("le", $data, $p + 10, 2);
         $p = $p + 46 + $nameLen + binary.readUint("le", $data, $p + 30, 2) +
             binary.readUint("le", $data, $p + 32, 2);
@@ -224,7 +222,7 @@ func entryText(a as Archive, name as string, reason as string) {
     }
     def out as string;
     try {
-        $out = convert.stringFromBytes("utf-8", $data);
+        $out = encoding.decode("utf-8", $data);
     } catch (e) {
         fail($reason, shown($name) + " is neither UTF-8 nor UTF-16 text");
     }
@@ -283,7 +281,7 @@ func declaredCharset(data as bytes, page as bool) {
     if ($n > 1024) {
         $n = 1024;
     }
-    def head as string init encoding.decode("iso-8859-1", binary.slice($data, 0, $n));
+    def head as string init encoding.decode("iso-8859-1", $data[..$n]);
     def m as regex.Match init regex.find(
         '^\s*<\?xml[^>]*\sencoding\s*=\s*["' + "']([A-Za-z0-9._-]+)",
         $head);
@@ -328,7 +326,7 @@ func documentText(a as Archive, name as string, reason as string, page as bool) 
     def utf8 as bool init true;
     def out as string;
     try {
-        $out = convert.stringFromBytes("utf-8", $data);
+        $out = encoding.decode("utf-8", $data);
     } catch (e) {
         $utf8 = false;
     }
@@ -401,7 +399,7 @@ func unescapeHref(href as string, reason as string) {
         return $href;
     }
     try {
-        return convert.stringFromBytes("utf-8", encoding.fromText("uri-percent", $href));
+        return encoding.decode("utf-8", encoding.fromText("uri-percent", $href));
     } catch (e) {
         fail($reason, "href " + shown($href) + " has a bad percent escape");
     }
@@ -477,9 +475,7 @@ func deobfuscate(data as bytes, algorithm as string, uid as string, identifiers 
     if (len($data) < $n) {
         $n = len($data);
     }
-    return binary.concat(
-        binary.bitXor(binary.slice($data, 0, $n), $key),
-        binary.slice($data, $n, len($data)));
+    return binary.concat(binary.bitXor($data[..$n], $key), $data[$n..len($data)]);
 }
 
 # --- the container and the package --------------------------------------
@@ -552,7 +548,7 @@ func relativeTo(dir as string, full as string) {
     if (strings.startsWith($full, $dir + "/")) {
         return $full[len($dir) + 1..];
     }
-    return strings.repeat("../", strings.count($dir, "/") + 1) + $full;
+    return strings.replicate("../", strings.count($dir, "/") + 1) + $full;
 }
 
 # The manifest, in document order. A remote item (`https://...`) is left

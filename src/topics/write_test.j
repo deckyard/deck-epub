@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - white-box tests for writing: the builders, the documents and
 # `build`. The first tests are ported from Grimoire's EPUB renderer. Spliced
@@ -575,7 +575,7 @@ func testACompressedBookIsSmallerAndReadsTheSame() {
         $b,
         "long.xhtml",
         "Long",
-        strings.repeat("Some words to squeeze. ", 2000));
+        strings.replicate("Some words to squeeze. ", 2000));
     $b.toc = tocOf($b);
     def stored as bytes init build($b);
     $b.compress = true;
@@ -592,7 +592,7 @@ func testACompressedBookIsSmallerAndReadsTheSame() {
     # An entry deflate does not shrink is stored.
     testing.assertEqual(packed(File{name: "x", data: bytesOf("ab")}, true).method, 0);
     testing.assertEqual(
-        packed(File{name: "x", data: bytesOf(strings.repeat("ab", 100))}, true).method,
+        packed(File{name: "x", data: bytesOf(strings.replicate("ab", 100))}, true).method,
         8);
 }
 

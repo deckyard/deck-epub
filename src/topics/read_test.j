@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - white-box tests for reading: round trips, the Project Gutenberg
 # fixtures, hand-made books for every refusal, DRM, caps and font
@@ -169,7 +169,7 @@ func testWhatIsNotAnEpubIsRefused() {
     }
     # A truncated archive.
     def whole as bytes init build(sampleBook());
-    testing.assertEqual(readReason(binary.slice($whole, 0, len($whole) - 30)), "archive");
+    testing.assertEqual(readReason($whole[..len($whole) - 30]), "archive");
 }
 
 func testTheContainerIsReadStrictly() {
@@ -685,7 +685,7 @@ func bookWithFont(uid as string, algorithm as string, font as bytes) {
 }
 
 func testIdpfFontObfuscationIsUndone() {
-    def font as bytes init bytesOf("OTTO" + strings.repeat("glyph data ", 120));
+    def font as bytes init bytesOf("OTTO" + strings.replicate("glyph data ", 120));
     def uid as string init "urn:uuid:00000000-1111-2222-3333-444444444444";
     # The key is the SHA-1 of the identifier with its whitespace removed.
     def key as bytes init hash.compute("sha1", bytesOf($uid));
@@ -697,7 +697,7 @@ func testIdpfFontObfuscationIsUndone() {
 }
 
 func testAdobeFontObfuscationIsUndone() {
-    def font as bytes init bytesOf("wOFF" + strings.repeat("x", 2000));
+    def font as bytes init bytesOf("wOFF" + strings.replicate("x", 2000));
     def uid as string init "urn:uuid:0123abcd-4567-89ef-0123-456789abcdef";
     def key as bytes init encoding.fromText("hex", "0123abcd456789ef0123456789abcdef");
     def data as bytes init bookWithFont($uid, ADOBE_OBFUSCATION, obfuscated($font, $key, 1024));
@@ -731,16 +731,16 @@ func testCapsAreLimitErrors() {
     testing.assertEqual($o.maxEntryBytes, DEFAULT_MAX_ENTRY_BYTES);
     testing.assertEqual($o.maxTotalBytes, DEFAULT_MAX_TOTAL_BYTES);
     $o.maxBytes = 100;
-    testing.assertThrowsWith("readWith", [$data, $o], "limit");
+    testing.assertThrowsArgs("readWith", [$data, $o], "limit");
     $o = readOptions();
     $o.maxEntries = 3;
-    testing.assertThrowsWith("readWith", [$data, $o], "limit");
+    testing.assertThrowsArgs("readWith", [$data, $o], "limit");
     $o = readOptions();
     $o.maxEntryBytes = 100;
-    testing.assertThrowsWith("readWith", [$data, $o], "limit");
+    testing.assertThrowsArgs("readWith", [$data, $o], "limit");
     $o = readOptions();
     $o.maxTotalBytes = 1000;
-    testing.assertThrowsWith("readWith", [$data, $o], "limit");
+    testing.assertThrowsArgs("readWith", [$data, $o], "limit");
     # Zero takes the default, a negative value lifts the cap.
     $o = ReadOptions{maxBytes: 0, maxEntries: 0, maxEntryBytes: 0, maxTotalBytes: 0};
     testing.assertEqual(readWith($data, $o).title, "A Book");
@@ -754,7 +754,7 @@ func testResourcesAreFoundByHref() {
     def b as Book init read(build(richBook()));
     testing.assertEqual(textOf(resource($b, "img/cover.png").data), "PNGDATA");
     testing.assertEqual(textOf(resource($b, "img/./dot.png#x").data), "PNG");
-    testing.assertThrowsWith("resource", [$b, "nope.png"], "epub");
+    testing.assertThrowsArgs("resource", [$b, "nope.png"], "epub");
     try {
         resource($b, "nope.png");
     } catch (e) {
@@ -1012,7 +1012,8 @@ func testDeepTablesOfContentsAreReadWithoutRecursion() {
     for (def i in 0..150) {
         $items = $items + '<li><a href="../ch.xhtml">L</a><ol>';
     }
-    $items = $items + '<li><a href="../ch.xhtml">Last</a></li>' + strings.repeat("</ol></li>", 150);
+    $items = $items + '<li><a href="../ch.xhtml">Last</a></li>' +
+        strings.replicate("</ol></li>", 150);
     def nav as string init '<html xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol>' +
         $items + "</ol></nav></body></html>";
     if (meta.BUILD == "tinygo") {
@@ -1034,7 +1035,7 @@ func testDeepTablesOfContentsAreReadWithoutRecursion() {
         $points = $points + '<navPoint><navLabel><text>P</text></navLabel><content src="ch.xhtml"/>';
     }
     def ncx as xml.Value init xml.decode('<ncx><navMap>' + $points +
-        strings.repeat("</navPoint>", 50) + "</navMap></ncx>");
+        strings.replicate("</navPoint>", 50) + "</navMap></ncx>");
     def entries as list of TocEntry init ncxToc($ncx, "toc.ncx", "toc.ncx");
     testing.assertEqual(len($entries), 50);
     testing.assertEqual($entries[49].level, 49);
@@ -1048,7 +1049,7 @@ func testDeepTablesOfContentsAreReadWithoutRecursion() {
 # elements, so a chapter past 64 levels is "limit" there too.
 func deepPage(depth as int) {
     return '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Deep</title></head><body>' +
-        strings.repeat("<div>", $depth) + "<p>x</p>" + strings.repeat("</div>", $depth) +
+        strings.replicate("<div>", $depth) + "<p>x</p>" + strings.replicate("</div>", $depth) +
         "</body></html>";
 }
 

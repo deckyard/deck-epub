@@ -1,7 +1,7 @@
 #!/usr/bin/env -S jennifer run
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 /**
  * Print a book's metadata, what `read` tolerated in it (its notes), table of
@@ -58,7 +58,7 @@ try {
     }
     io.printf("\ncontents\n");
     for (def e in $b.toc) {
-        io.printf("  %s%s\n", strings.repeat("  ", $e.level), $e.title);
+        io.printf("  %s%s\n", strings.replicate("  ", $e.level), $e.title);
     }
     io.printf("\nfiles\n");
     for (def r in $b.resources) {

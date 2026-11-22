@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - writing a book: the builders and `build`.
 #
@@ -120,7 +120,7 @@ func xhtmlPage(
 
 # The way from a file at `href` back up to the package directory.
 func upTo(href as string) {
-    return strings.repeat("../", strings.count($href, "/"));
+    return strings.replicate("../", strings.count($href, "/"));
 }
 
 # The manifest properties a content document needs for what it holds.
@@ -1284,7 +1284,7 @@ func forWriting(b as Book) {
         if (hasProperty($r.properties, "nav") and strings.lower($r.mediaType) == XHTML_TYPE) {
             def text as string init "";
             try {
-                $text = convert.stringFromBytes("utf-8", $r.data);
+                $text = encoding.decode("utf-8", $r.data);
             } catch (e) {
                 $kept[] = $r;
                 continue;

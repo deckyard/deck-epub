@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - the shared core: the book model, the error, the constants, and the
 # path and media type helpers the writer and the reader both use.
@@ -324,7 +324,7 @@ func isGeneric(kind as string) {
 }
 
 func bytesOf(text as string) {
-    return convert.bytesFromString("utf-8", $text);
+    return encoding.encode("utf-8", $text);
 }
 
 # A short, printable rendering of a name for a message.

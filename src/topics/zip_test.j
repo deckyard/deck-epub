@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - white-box tests for the zip writer (ported from Grimoire's). The
 # archive is written by hand, so the byte order, the checksum and the stored
@@ -35,14 +35,14 @@ func testTheArchiveOpensWithAStoredMimetype() {
     # Bytes 8 and 9 are the compression method: 0 is stored, 8 is deflate.
     testing.assertEqual($z[8], 0);
     testing.assertEqual($z[9], 0);
-    testing.assertEqual(textOf(binary.slice($z, 30, 38)), "mimetype");
-    testing.assertEqual(textOf(binary.slice($z, 38, 38 + len(MIMETYPE))), MIMETYPE);
+    testing.assertEqual(textOf($z[30..38]), "mimetype");
+    testing.assertEqual(textOf($z[38..38 + len(MIMETYPE)]), MIMETYPE);
 }
 
 # Stored, not deflated, for every entry: a payload that would certainly
 # compress is in the archive verbatim.
 func testEntriesAreNotCompressed() {
-    def payload as string init strings.repeat("a", 400);
+    def payload as string init strings.replicate("a", 400);
     def z as bytes init zipOf([File{name: "long.txt", data: bytesOf($payload)}], false);
     testing.assertTrue(binary.contains($z, bytesOf($payload)));
 }
@@ -56,7 +56,7 @@ func testTheDirectoryCountsEveryEntry() {
         ],
         false);
     def end as int init len($z) - 22;
-    testing.assertTrue(binary.startsWith(binary.slice($z, $end, len($z)), le32(0x06054b50)));
+    testing.assertTrue(binary.startsWith($z[$end..len($z)], le32(0x06054b50)));
     testing.assertEqual($z[$end + 10], 3);
 }
 

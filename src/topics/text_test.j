@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - white-box tests for plain text and the HTML reading: entities, the
 # `html` fallback for chapters that are not XML, and the agreement of the two
@@ -168,9 +168,9 @@ func testTheActiveTagsAreTheOnesTheEventsActOn() {
 # build's value nesting cap (64 levels, two per element) stops the `html`
 # parse of such a page first, as kind "limit".
 func testADeeplyNestedPageIsWalkedWithoutRecursion() {
-    def deep as string init "<html><body>" + strings.repeat("<div>", 300) +
+    def deep as string init "<html><body>" + strings.replicate("<div>", 300) +
         "<p>deep <b>text</b></p>" +
-        strings.repeat("</div>", 300) + "</body></html>";
+        strings.replicate("</div>", 300) + "</body></html>";
     if (meta.BUILD == "tinygo") {
         def kind as string init "";
         try {

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - white-box tests for the core topic, and the helpers the other
 # overlays use. Spliced into epub_test.j via include - run with:
@@ -13,7 +13,7 @@ func fixture(rows as list of string) {
 }
 
 func textOf(data as bytes) {
-    return convert.stringFromBytes("utf-8", $data);
+    return encoding.decode("utf-8", $data);
 }
 
 # The reason of the EpubError `read` throws for these bytes, or the kind of
@@ -171,7 +171,7 @@ func testTheErrorIsAStructWithAReason() {
 
 func testLongNamesAreShortenedInMessages() {
     testing.assertEqual(shown("a"), '"a"');
-    testing.assertEqual(len(shown(strings.repeat("x", 500))), 125);
+    testing.assertEqual(len(shown(strings.replicate("x", 500))), 125);
 }
 
 # Hrefs are written percent-encoded wherever they are URLs; a plain ASCII

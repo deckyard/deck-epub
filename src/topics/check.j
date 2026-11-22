@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # epub - `check`: the links inside a book that lead nowhere; `rename`, which
 # moves a file and the links to it. `build` only
@@ -176,7 +176,7 @@ func relativeUrl(from as string, target as string) {
     while ($k < len($up) and $k < len($down) - 1 and $up[$k] == $down[$k]) {
         $k = $k + 1;
     }
-    def out as string init strings.repeat("../", len($up) - $k) + strings.join($down[$k..], "/");
+    def out as string init strings.replicate("../", len($up) - $k) + strings.join($down[$k..], "/");
     return hrefUrl($out);
 }
 
