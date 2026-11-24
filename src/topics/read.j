@@ -60,13 +60,19 @@ export func readOptions() {
     };
 }
 
-# A cap as configured: 0 is the default, a negative value is no cap (-1).
+# The largest int: a cap that is no cap (`math.MAX_INT` from Jennifer
+# 0.28.0 on, whose `archive` refuses a negative one; written out so 0.27.0
+# runs it too).
+def const NO_LIMIT as int init 9223372036854775807;
+
+# A cap as configured: 0 is the default, a negative value is no cap
+# (`NO_LIMIT`).
 func capOf(value as int, fallback as int) {
     if ($value == 0) {
         return $fallback;
     }
     if ($value < 0) {
-        return -1;
+        return NO_LIMIT;
     }
     return $value;
 }
@@ -1416,7 +1422,7 @@ export func read(data as bytes) {
  */
 export func readWith(data as bytes, opts as ReadOptions) {
     def maxBytes as int init capOf($opts.maxBytes, DEFAULT_MAX_BYTES);
-    if ($maxBytes >= 0 and len($data) > $maxBytes) {
+    if (len($data) > $maxBytes) {
         throw Error{
             kind: "limit",
             message: "epub: the file is larger than " + convert.toString($maxBytes) + " bytes"

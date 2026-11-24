@@ -165,28 +165,38 @@ func testTheActiveTagsAreTheOnesTheEventsActOn() {
     testing.assertEqual(lists.sort(maps.keys(ACTIVE)), lists.sort($want));
 }
 
-# A page nested far deeper than the tiny build's 120 nested calls is walked
-# with an explicit stack, read as HTML (not well formed) or not; before,
-# `walk`, `findTags` and `gatherText` recursed once per level. The tiny
-# build's value nesting cap (64 levels, two per element) stops the `html`
-# parse of such a page first, as kind "limit".
+# A page of 200 nested elements, far deeper than the tiny build's 120 nested
+# calls, is walked with an explicit stack, read as HTML (not well formed) or
+# not; before, `walk`, `findTags` and `gatherText` recursed once per level.
+# It stays under the `html` parser's nesting cap (256 from Jennifer 0.28.0
+# on, 512 before); a page past both is kind "limit". The tiny build's value
+# nesting cap (64 levels, two per element) stops the `html` parse of the
+# 200-level page first, as kind "limit" too.
 func testADeeplyNestedPageIsWalkedWithoutRecursion() {
-    def deep as string init "<html><body>" + strings.replicate("<div>", 300) +
-        "<p>deep <b>text</b></p>" +
-        strings.replicate("</div>", 300) + "</body></html>";
+    testing.assertEqual(parseKind(nestedPage(600)), "limit");
+    def deep as string init nestedPage(200);
     if (meta.BUILD == "tinygo") {
-        def kind as string init "";
-        try {
-            parseHtml($deep);
-        } catch (e) {
-            $kind = $e.kind;
-        }
-        testing.assertEqual($kind, "limit");
+        testing.assertEqual(parseKind($deep), "limit");
         return;
     }
     testing.assertEqual(text(chapterFrom($deep, false)), "deep text");
     def doc as html.Node init parseHtml($deep);
-    testing.assertEqual(len(findTags($doc, "div", [])), 300);
+    testing.assertEqual(len(findTags($doc, "div", [])), 200);
     testing.assertEqual(inlineText(findTags($doc, "body", [])[0]), "deep text");
+}
+
+func nestedPage(depth as int) {
+    return "<html><body>" + strings.replicate("<div>", $depth) + "<p>deep <b>text</b></p>" +
+        strings.replicate("</div>", $depth) + "</body></html>";
+}
+
+# The kind `parseHtml` throws for a page, "" when it parses.
+func parseKind(page as string) {
+    try {
+        parseHtml($page);
+    } catch (e) {
+        return $e.kind;
+    }
+    return "";
 }
 

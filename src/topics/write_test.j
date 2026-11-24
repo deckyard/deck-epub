@@ -423,7 +423,8 @@ func testHrefsDifferingOnlyInCaseClash() {
 # `xml.encode` counts too.
 
 # A table of contents deeper than nav.xhtml can be read back (the `html`
-# parser stops at 512 elements, two per level) is a reached cap. Before the
+# parser stops at 256 elements from Jennifer 0.28.0 on, 512 before, two per
+# level) is a reached cap. Before the
 # cap, level 300 built a book `read` refused and level 600 failed in
 # `xml.append` (kind "runtime" then; "limit" since the interpreter's M28.68).
 # On the tiny build the interpreter's value nesting cap stops reading

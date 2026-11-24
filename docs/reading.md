@@ -186,7 +186,8 @@ member named with an absolute path or a `..` segment (a "zip slip") and
 symbolic links; the deck turns those into reason `"archive"`. Parsing is
 bounded too: the `xml` and `html` parsers cap nesting depth and node count,
 and their `"limit"` passes through unchanged. A chapter past the `xml` cap
-is read as HTML instead, as long as the `html` parser (512 levels) takes it.
+is read as HTML instead, as long as the `html` parser takes it (256 levels from Jennifer 0.28.0 on,
+512 before).
 
 On the tiny build (`jennifer-tiny`, declared and tested) the deck works the
 same, within that build's smaller limits: the `xml` parser nests at most 64

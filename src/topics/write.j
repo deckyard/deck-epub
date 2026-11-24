@@ -818,9 +818,8 @@ func tocOf(b as Book) {
 
 # The deepest table of contents level `build` writes. Each level is two
 # elements of nav.xhtml (`<li><ol>`), and the `html` parser that reads it
-# back stops at 512; deeper, `xml.append` itself refuses the tree (kind
-# "limit"). Books
-# nest a few levels.
+# back stops at 256 (512 before Jennifer 0.28.0); deeper, `xml.append`
+# itself refuses the tree (kind "limit"). Books nest a few levels.
 def const MAX_TOC_LEVEL as int init 100;
 
 # The same on the tiny build, where the interpreter's value nesting cap (64
