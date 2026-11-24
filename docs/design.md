@@ -5,7 +5,7 @@
 
 ## Scope
 
-The deck reads and writes EPUB books in pure Jennifer, working on bytes: it
+The deck reads and writes EPUB™ books in pure Jennifer, working on bytes: it
 opens no files and needs no capability.
 
 - **Writing** produces EPUB 3.3, with an optional EPUB 2 `toc.ncx` for older
@@ -126,16 +126,18 @@ Books are untrusted input.
 - **XML.** The `xml` parser expands no entities, so external entities and
   entity bombs in a package or chapter fail as malformed; its nesting cap
   passes through as `"limit"`.
-- **DRM** is detected by the files it leaves (Adobe ADEPT, Readium LCP,
-  Apple FairPlay) or by any encryption besides font obfuscation, and the
+- **DRM** is detected by the files it leaves (Adobe™ ADEPT, Readium™ LCP,
+  Apple™ FairPlay™) or by any encryption besides font obfuscation, and the
   book is refused with reason `"drm"`.
 - **Scripts** in chapters are kept and marked `scripted`, never run.
 
 ## Testing and validation
 
 The overlays test both directions without a network: hand-made archives
-for every error path and tolerance, and Project Gutenberg #1080 as EPUB 3
-and EPUB 2, embedded as base64 so the suite runs from a bare copy of `src/`.
+for every error path and tolerance, and Project Gutenberg™ #1080 as EPUB 3
+and EPUB 2, read from `testdata/gutenberg/`. Those books stay out of `src/`, so
+consumers never vendor them; from a bare copy of `src/` their tests return
+early, and `tools/check-extra.sh` makes sure the gate never runs without them.
 
 By hand, on 2026-11-14 and 2026-11-15:
 
@@ -151,7 +153,7 @@ By hand, on 2026-11-14 and 2026-11-15:
   writer feature, and on rebuilt samples: Gutenberg EPUB 2 and 3, Standard
   Ebooks, fixed-layout comics, an RTL book, books with media overlays.
 - `tools/check-extra.sh` runs EPUBCheck on the example book when a jar and
-  Docker are available; CI skips it.
+  Docker™ are available; CI skips it.
 
 Not covered: DRM-free books from commercial stores, Calibre output,
 EPUB 3 multiple renditions, and any reading system's rendering.

@@ -3,7 +3,7 @@
 
 # Reading a book
 
-`read` takes the bytes of an EPUB 2 or 3 file and returns a `Book`:
+`read` takes the bytes of an EPUB™ 2 or 3 file and returns a `Book`:
 
 ```jennifer
 import "@deckyard/epub/" as epub;
@@ -148,9 +148,9 @@ with no content; its bytes are among the resources.
 ## DRM and obfuscated fonts
 
 A DRM-protected book cannot be read, and `read` says so with reason
-`"drm"`: when it carries `META-INF/rights.xml` (Adobe ADEPT),
-`META-INF/license.lcpl` (Readium LCP) or `META-INF/sinf.xml` (Apple
-FairPlay), or when `META-INF/encryption.xml` lists a file encrypted with
+`"drm"`: when it carries `META-INF/rights.xml` (Adobe™ ADEPT),
+`META-INF/license.lcpl` (Readium™ LCP) or `META-INF/sinf.xml` (Apple™
+FairPlay™), or when `META-INF/encryption.xml` lists a file encrypted with
 anything but font obfuscation.
 
 Font obfuscation is not DRM: it only stops a font being lifted out of the

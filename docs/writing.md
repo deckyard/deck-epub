@@ -4,7 +4,7 @@
 # Writing a book
 
 A book starts with `book(title, lang)`, takes its parts one call at a time,
-and becomes an EPUB file with `build`:
+and becomes an EPUB™ file with `build`:
 
 ```jennifer
 import "@deckyard/epub/" as epub;

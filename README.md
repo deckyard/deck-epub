@@ -4,7 +4,7 @@
 [![Documentation](https://img.shields.io/badge/docs-github%20pages-blue)](https://deckyard.github.io/deck-epub/)
 [![release](https://img.shields.io/github/v/release/deckyard/deck-epub)](https://github.com/deckyard/deck-epub/releases/latest)
 
-Read and write EPUB books in a [Jennifer](https://jennifer-lang.dev/)
+Read and write EPUB™ books in a [Jennifer](https://jennifer-lang.dev/)
 program, in pure Jennifer. Writing builds EPUB 3.3 (with an optional EPUB 2
 `toc.ncx`) from XHTML or Markdown chapters, a cover, pictures and a
 stylesheet, deterministically: the same book gives the same bytes, stored or
@@ -68,17 +68,28 @@ tools/pack.sh dist                 # build the release archive
 ```
 
 `tools/check-extra.sh` also validates a built book with
-[EPUBCheck](https://www.w3.org/publishing/epubcheck/) when Docker and the
+[EPUBCheck](https://www.w3.org/publishing/epubcheck/) when Docker™ and the
 EPUBCheck jar are available (`EPUBCHECK_JAR=/path/to/epubcheck.jar`), and
 skips that check otherwise.
+
+## Trademarks
+
+EPUB™ is a trademark of the World Wide Web Consortium, Inc. (W3C). Adobe™ is
+a trademark of Adobe Inc. Apple™ and FairPlay™ are trademarks of Apple Inc.
+Project Gutenberg™ and other product and company names may be trademarks of
+their respective owners. They are used only to identify the formats and
+products this deck works with. This deck is an independent project, not
+affiliated with, sponsored or endorsed by the W3C, the Project Gutenberg
+Literary Archive Foundation, Adobe Inc. or Apple Inc.
 
 ## Licence
 
 LGPL-3.0-only, see [LICENSE](LICENSE). Copyright (C) 2026 mplx &lt;mplx@jennifer-lang.dev&gt;.
 
-The test fixtures embed Project Gutenberg eBook #1080 (Jonathan Swift, "A
-Modest Proposal"), public domain in the USA, distributed under the Project
-Gutenberg licence included in the book; see `tools/build-fixtures.sh`.
+The tests read Project Gutenberg™ eBook #1080 (Jonathan Swift, "A Modest
+Proposal", public domain) from `testdata/gutenberg/`: Project Gutenberg's own
+files, unmodified, under the Project Gutenberg licence included in them. They
+are not part of the deck's `src/`; see `testdata/gutenberg/README.md`.
 
 `tools/check-headers.sh` checks every source file's SPDX header against
 `deck.toml`.

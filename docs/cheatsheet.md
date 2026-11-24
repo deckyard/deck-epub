@@ -20,7 +20,7 @@ kind `"limit"`.
 |---|---|---|
 | `MIMETYPE` | `"application/epub+zip"` | the content of the `mimetype` entry |
 | `ERROR_KIND` | `"epub"` | the `kind` of every `EpubError` |
-| `DEFAULT_MAX_BYTES` | `134217728` | the largest EPUB `read` takes (128 MiB) |
+| `DEFAULT_MAX_BYTES` | `134217728` | the largest EPUB™ `read` takes (128 MiB) |
 | `DEFAULT_MAX_ENTRIES` | `10000` | the most files in the archive |
 | `DEFAULT_MAX_ENTRY_BYTES` | `67108864` | the largest unpacked file (64 MiB) |
 | `DEFAULT_MAX_TOTAL_BYTES` | `268435456` | the most unpacked bytes in all (256 MiB) |

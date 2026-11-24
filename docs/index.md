@@ -3,7 +3,7 @@
 
 # @deckyard/epub
 
-Read and write EPUB books in pure Jennifer. An EPUB is a zip archive of XHTML
+Read and write EPUB™ books in pure Jennifer. An EPUB is a zip archive of XHTML
 chapters plus two XML files: `META-INF/container.xml`, which names the package
 document, and the package document (the OPF), which carries the metadata, the
 manifest of every file and the spine, the reading order. This deck builds that
@@ -54,7 +54,7 @@ Every error the deck throws itself is an `epub.EpubError`: kind `"epub"`, a
 | `"archive"` | the bytes are not a zip, or it holds an unsafe name (`../x`) or a name twice |
 | `"container"` | the `mimetype` entry is missing, compressed or wrong, or `META-INF/container.xml` (or `encryption.xml`) is missing or malformed |
 | `"package"` | the package document is malformed or lacks a title, language, unique identifier, manifest or spine, or names a file the archive lacks |
-| `"drm"` | the book is DRM-protected (Adobe ADEPT, Readium LCP, Apple FairPlay, or any encryption other than font obfuscation) |
+| `"drm"` | the book is DRM-protected (Adobe™ ADEPT, Readium™ LCP, Apple™ FairPlay™, or any encryption other than font obfuscation) |
 | `"content"` | a chapter is neither UTF-8 nor UTF-16, or a body given to `chapter` is not well-formed XHTML |
 | `"toc"` | a `toc.ncx` is malformed, or a table of contents given to `build` does not nest or points outside the chapters |
 | `"missing"` | `resource` finds no file with that href |
@@ -77,3 +77,13 @@ try {
 
 A helper that receives a caught error takes `epub.EpubError`, not `Error`:
 a parameter typed `Error` does not accept a struct of another type.
+
+## Trademarks
+
+EPUB™ is a trademark of the World Wide Web Consortium, Inc. (W3C). Adobe™ is
+a trademark of Adobe Inc. Apple™ and FairPlay™ are trademarks of Apple Inc.
+Project Gutenberg™ and other product and company names may be trademarks of
+their respective owners. They are used only to identify the formats and
+products this deck works with. This deck is an independent project, not
+affiliated with, sponsored or endorsed by the W3C, the Project Gutenberg
+Literary Archive Foundation, Adobe Inc. or Apple Inc.
