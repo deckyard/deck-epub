@@ -13,6 +13,7 @@
 
 use testing;
 use meta;
+use fs;
 
 include "topics/core_test.j";
 include "topics/zip_test.j";

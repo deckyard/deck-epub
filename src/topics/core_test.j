@@ -6,12 +6,6 @@
 # overlays use. Spliced into epub_test.j via include - run with:
 #   jennifer test src/epub_test.j
 
-include "fixtures/gutenberg_test.j";
-
-func fixture(rows as list of string) {
-    return encoding.fromText("base64", strings.join($rows, ""));
-}
-
 func textOf(data as bytes) {
     return encoding.decode("utf-8", $data);
 }

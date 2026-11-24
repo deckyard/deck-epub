@@ -6,12 +6,22 @@
 # fixtures, hand-made books for every refusal, DRM, caps and font
 # obfuscation. Spliced into epub_test.j via include.
 
+# The Project Gutenberg books live in testdata/gutenberg/
+# (tools/build-fixtures.sh), outside src/, so a consumer never vendors them.
+# Where testdata/ is missing (jvc publish and jvc install --runtests run the
+# overlays from a copy of src/ alone), the tests that read them return early;
+# tools/check-extra.sh fails the gate if the files are gone.
+func haveGutenberg() {
+    return fs.isFile("testdata/gutenberg/pg1080-epub3.epub") and
+        fs.isFile("testdata/gutenberg/pg1080-epub2.epub");
+}
+
 func gutenberg3() {
-    return read(fixture(GUTENBERG_EPUB3_BASE64));
+    return read(fs.readBytes("testdata/gutenberg/pg1080-epub3.epub"));
 }
 
 func gutenberg2() {
-    return read(fixture(GUTENBERG_EPUB2_BASE64));
+    return read(fs.readBytes("testdata/gutenberg/pg1080-epub2.epub"));
 }
 
 # --- round trips -----------------------------------------------------------
@@ -80,6 +90,9 @@ def const SWIFT_TITLE as string init "A Modest Proposal / For preventing the chi
     "beneficial to the publick";
 
 func testAGutenbergEpub3IsRead() {
+    if (not haveGutenberg()) {
+        return;
+    }
     def b as Book init gutenberg3();
     testing.assertEqual($b.version, "3.0");
     testing.assertEqual($b.title, SWIFT_TITLE);
@@ -116,6 +129,9 @@ func testAGutenbergEpub3IsRead() {
 }
 
 func testAGutenbergEpub2IsRead() {
+    if (not haveGutenberg()) {
+        return;
+    }
     def b as Book init gutenberg2();
     testing.assertEqual($b.version, "2.0");
     testing.assertEqual($b.title, SWIFT_TITLE);
@@ -134,6 +150,9 @@ func testAGutenbergEpub2IsRead() {
 
 # A real book rebuilt as EPUB 3 keeps its text.
 func testAGutenbergBookSurvivesARebuild() {
+    if (not haveGutenberg()) {
+        return;
+    }
     def b as Book init gutenberg3();
     def again as Book init read(build($b));
     testing.assertEqual($again.chapters, $b.chapters);

@@ -112,6 +112,9 @@ func testPlainTextKeepsParagraphsBreaksAndPre() {
 func testTheTwoReadingsAgree() {
     def same as list of string init bothWays(FULL_PAGE);
     testing.assertEqual($same[0], $same[1]);
+    if (not haveGutenberg()) {
+        return;
+    }
     def b as Book init gutenberg3();
     for (def c in $b.chapters) {
         def both as list of string init bothWays($c.content);

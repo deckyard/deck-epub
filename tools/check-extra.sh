@@ -20,6 +20,16 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# The Project Gutenberg overlays return early without testdata/gutenberg/
+# (where the overlays run from a copy of src/ alone); here, in the gate, the
+# files must be present, or those tests would pass without running.
+for f in testdata/gutenberg/pg1080-epub3.epub testdata/gutenberg/pg1080-epub2.epub; do
+    if [[ ! -s "$f" ]]; then
+        echo "check-extra: $f is missing; run tools/build-fixtures.sh" >&2
+        exit 1
+    fi
+done
+
 JENNIFER="${JENNIFER:-jennifer}"
 jar="${EPUBCHECK_JAR:-}"
 image="${EPUBCHECK_IMAGE:-eclipse-temurin:21-jre}"
