@@ -1,6 +1,6 @@
 [package]
 name = "@deckyard/epub"
-version = "0.2.0"
+version = "0.3.0"
 description = "Read and write EPUB books: metadata, chapters, table of contents, images and styles"
 license = "LGPL-3.0-only"
 authors = ["mplx <mplx@jennifer-lang.dev>"]
