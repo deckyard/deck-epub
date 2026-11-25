@@ -51,7 +51,7 @@ for (def c in $back.chapters) {
 
 ## Requirements
 
-Jennifer 0.27.0 or newer. No capability: the deck works on bytes and does no
+Jennifer 0.28.0 or newer. No capability: the deck works on bytes and does no
 file, network or process access of its own. It uses the `archive`, `xml`,
 `crc`, `hash` and `encoding` libraries and the bundled `markdown` and `html`
 modules. Runs on `jennifer-tiny` too, within its smaller nesting and

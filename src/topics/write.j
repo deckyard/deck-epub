@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.27.0
+# pragma-jennifer-version: >=0.28.0
 
 # epub - writing a book: the builders and `build`.
 #
@@ -73,7 +73,9 @@ func identifierFor(title as string, lang as string) {
 # `epub:type` in it is declared by the page around it.
 func bodyOf(markup as string, href as string) {
     try {
-        return xml.decode("<body>" + $markup + "</body>", {"": XHTML_NS, "epub": OPS_NS});
+        return xml.decodeWith(
+            "<body>" + $markup + "</body>",
+            xml.DecodeOptions{namespaces: {"": XHTML_NS, "epub": OPS_NS}});
     } catch (e) {
         if (isGeneric($e.kind)) {
             throw $e;

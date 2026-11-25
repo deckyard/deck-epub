@@ -193,5 +193,5 @@ EPUB 3 multiple renditions, and any reading system's rendering.
 - `archive.unpackWith` with entry and total caps, `xml` and `html` caps
   that throw kind `"limit"` (the decoder-cap milestone), and the
   `markdown` module's XHTML output.
-- A floor of 0.27.0, for the UTF-8 codecs of `encoding.encode` / `decode`,
+- A floor of 0.28.0 (the calls 0.29.0 removes are replaced by their 0.28.0 forms), for the UTF-8 codecs of `encoding.encode` / `decode`,
   `strings.replicate` and `testing.assertThrowsArgs`.
