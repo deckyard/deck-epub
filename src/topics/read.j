@@ -81,7 +81,7 @@ func capOf(value as int, fallback as int) {
 
 # Whether the bytes start as a zip archive does: a local file header.
 func checkZip(data as bytes) {
-    if (len($data) < 30 or not binary.startsWith($data, le32(0x04034b50))) {
+    if (len($data) < 30 or not binary.startsWith($data, binary.fromUint("le", 0x04034b50, 4))) {
         fail("archive", "not a zip archive");
     }
 }
@@ -124,7 +124,7 @@ func mimetypeNote(data as bytes, a as Archive, methods as map of string to int) 
 # comment that hides the end record) gives what it found so far.
 func entryMethods(data as bytes) {
     def out as map of string to int;
-    def sig as bytes init le32(0x06054b50);
+    def sig as bytes init binary.fromUint("le", 0x06054b50, 4);
     def from as int init len($data) - 65557;
     if ($from < 0) {
         $from = 0;
@@ -140,7 +140,7 @@ func entryMethods(data as bytes) {
     }
     def count as int init binary.readUint("le", $data, $eocd + 10, 2);
     def p as int init binary.readUint("le", $data, $eocd + 16, 4);
-    def central as bytes init le32(0x02014b50);
+    def central as bytes init binary.fromUint("le", 0x02014b50, 4);
     for (def i in 0..$count) {
         if ($p + 46 > len($data) or $data[$p..$p + 4] != $central) {
             return $out;

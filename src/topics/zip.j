@@ -16,8 +16,9 @@
 def const DOS_TIME as int init 0;
 def const DOS_DATE as int init 33;
 
-# Without zip64 a count is 16 bits and an offset or size 32.
+# Without zip64 a count or a name's length is 16 bits and an offset or size 32.
 def const ZIP_MAX_ENTRIES as int init 65535;
+def const ZIP_MAX_NAME as int init 65535;
 def const ZIP_MAX_BYTES as int init 4294967295;
 
 # One file on its way into the archive.
@@ -26,27 +27,9 @@ def struct File {
     data as bytes
 };
 
-# Little-endian, the order every field in a zip is written in.
-func le16(n as int) {
-    def out as bytes;
-    $out[] = $n & 0xff;
-    $out[] = ($n >> 8) & 0xff;
-    return $out;
-}
-
-func le32(n as int) {
-    def out as bytes;
-    $out[] = $n & 0xff;
-    $out[] = ($n >> 8) & 0xff;
-    $out[] = ($n >> 16) & 0xff;
-    $out[] = ($n >> 24) & 0xff;
-    return $out;
-}
-
 # `crc.compute` hands back the checksum big-endian; a zip field wants the number.
 func crcOf(data as bytes) {
-    def sum as bytes init crc.compute("crc32", $data);
-    return ($sum[0] << 24) + ($sum[1] << 16) + ($sum[2] << 8) + $sum[3];
+    return binary.readUint("be", crc.compute("crc32", $data), 0, 4);
 }
 
 # The general purpose flags of an entry: bit 11 says its name is UTF-8,
@@ -63,17 +46,17 @@ func flagsOf(name as string) {
 func localHeader(f as File, e as Packed) {
     def name as bytes init bytesOf($f.name);
     return binary.join([
-        le32(0x04034b50),
-        le16(20),
-        le16(flagsOf($f.name)),
-        le16($e.method),
-        le16(DOS_TIME),
-        le16(DOS_DATE),
-        le32($e.sum),
-        le32(len($e.data)),
-        le32(len($f.data)),
-        le16(len($name)),
-        le16(0),
+        binary.fromUint("le", 0x04034b50, 4),
+        binary.fromUint("le", 20, 2),
+        binary.fromUint("le", flagsOf($f.name), 2),
+        binary.fromUint("le", $e.method, 2),
+        binary.fromUint("le", DOS_TIME, 2),
+        binary.fromUint("le", DOS_DATE, 2),
+        binary.fromUint("le", $e.sum, 4),
+        binary.fromUint("le", len($e.data), 4),
+        binary.fromUint("le", len($f.data), 4),
+        binary.fromUint("le", len($name), 2),
+        binary.fromUint("le", 0, 2),
         $name
     ]);
 }
@@ -81,23 +64,23 @@ func localHeader(f as File, e as Packed) {
 func centralHeader(f as File, e as Packed, offset as int) {
     def name as bytes init bytesOf($f.name);
     return binary.join([
-        le32(0x02014b50),
-        le16(20),
-        le16(20),
-        le16(flagsOf($f.name)),
-        le16($e.method),
-        le16(DOS_TIME),
-        le16(DOS_DATE),
-        le32($e.sum),
-        le32(len($e.data)),
-        le32(len($f.data)),
-        le16(len($name)),
-        le16(0),
-        le16(0),
-        le16(0),
-        le16(0),
-        le32(0),
-        le32($offset),
+        binary.fromUint("le", 0x02014b50, 4),
+        binary.fromUint("le", 20, 2),
+        binary.fromUint("le", 20, 2),
+        binary.fromUint("le", flagsOf($f.name), 2),
+        binary.fromUint("le", $e.method, 2),
+        binary.fromUint("le", DOS_TIME, 2),
+        binary.fromUint("le", DOS_DATE, 2),
+        binary.fromUint("le", $e.sum, 4),
+        binary.fromUint("le", len($e.data), 4),
+        binary.fromUint("le", len($f.data), 4),
+        binary.fromUint("le", len($name), 2),
+        binary.fromUint("le", 0, 2),
+        binary.fromUint("le", 0, 2),
+        binary.fromUint("le", 0, 2),
+        binary.fromUint("le", 0, 2),
+        binary.fromUint("le", 0, 4),
+        binary.fromUint("le", $offset, 4),
         $name
     ]);
 }
@@ -136,6 +119,12 @@ func zipOf(files as list of File, deflate as bool) {
     def central as list of bytes;
     def offset as int init 0;
     for (def i in 0..len($files)) {
+        if (len(bytesOf($files[$i].name)) > ZIP_MAX_NAME) {
+            throw Error{kind: "limit", message: "epub: a file name longer than 65535 bytes"};
+        }
+        if (len($files[$i].data) > ZIP_MAX_BYTES) {
+            throw Error{kind: "limit", message: "epub: the book is larger than 4 GiB"};
+        }
         def e as Packed init packed($files[$i], $deflate and $i > 0);
         def header as bytes init localHeader($files[$i], $e);
         $body[] = $header;
@@ -147,15 +136,18 @@ func zipOf(files as list of File, deflate as bool) {
         }
     }
     def directory as bytes init binary.join($central);
+    if (len($directory) > ZIP_MAX_BYTES) {
+        throw Error{kind: "limit", message: "epub: the book is larger than 4 GiB"};
+    }
     def end as bytes init binary.join([
-        le32(0x06054b50),
-        le16(0),
-        le16(0),
-        le16(len($files)),
-        le16(len($files)),
-        le32(len($directory)),
-        le32($offset),
-        le16(0)
+        binary.fromUint("le", 0x06054b50, 4),
+        binary.fromUint("le", 0, 2),
+        binary.fromUint("le", 0, 2),
+        binary.fromUint("le", len($files), 2),
+        binary.fromUint("le", len($files), 2),
+        binary.fromUint("le", len($directory), 4),
+        binary.fromUint("le", $offset, 4),
+        binary.fromUint("le", 0, 2)
     ]);
     $body[] = $directory;
     $body[] = $end;

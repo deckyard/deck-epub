@@ -7,15 +7,13 @@
 # first entry are tested against fixed values, not against the code that made
 # them. Spliced into epub_test.j via include.
 
+# A 0x0201-byte entry: its sizes in the local header (offsets 18 and 22)
+# come low byte first.
 func testLittleEndianFieldsAreWrittenLowByteFirst() {
-    def small as bytes init le16(0x0201);
-    testing.assertEqual(len($small), 2);
-    testing.assertEqual($small[0], 1);
-    testing.assertEqual($small[1], 2);
-    def wide as bytes init le32(0x04030201);
-    testing.assertEqual(len($wide), 4);
-    testing.assertEqual($wide[0], 1);
-    testing.assertEqual($wide[3], 4);
+    def z as bytes init zipOf([File{name: "a", data: binary.make(0x0201)}], false);
+    testing.assertEqual($z[18..22], encoding.fromText("hex", "01020000"));
+    testing.assertEqual($z[22..26], encoding.fromText("hex", "01020000"));
+    testing.assertEqual($z[26..28], encoding.fromText("hex", "0100"));
 }
 
 # The check value every crc32 implementation is published with.
@@ -31,7 +29,7 @@ func testTheArchiveOpensWithAStoredMimetype() {
             File{name: "OEBPS/style.css", data: bytesOf(CSS)}
         ],
         false);
-    testing.assertTrue(binary.startsWith($z, le32(0x04034b50)));
+    testing.assertTrue(binary.startsWith($z, encoding.fromText("hex", "504b0304")));
     # Bytes 8 and 9 are the compression method: 0 is stored, 8 is deflate.
     testing.assertEqual($z[8], 0);
     testing.assertEqual($z[9], 0);
@@ -56,7 +54,7 @@ func testTheDirectoryCountsEveryEntry() {
         ],
         false);
     def end as int init len($z) - 22;
-    testing.assertTrue(binary.startsWith($z[$end..len($z)], le32(0x06054b50)));
+    testing.assertTrue(binary.startsWith($z[$end..len($z)], encoding.fromText("hex", "504b0506")));
     testing.assertEqual($z[$end + 10], 3);
 }
 
