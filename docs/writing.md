@@ -47,9 +47,8 @@ $b = epub.tocEntries($b, [epub.TocEntry{title: "Maps", href: "maps.xhtml", level
 ```
 
 Each item is checked as the single builder checks it, and a failing one
-leaves the book as it was. 300 chapters and 60 pictures of 200 KB, added
-from a function of an importing program: about 0.35 s one call at a time,
-0.05 s in two batch calls.
+leaves the book as it was. 1000 chapters added from an importing program
+on 0.28.0: about 0.9 s one call at a time, 0.05 s in one batch call.
 
 ## The book
 
